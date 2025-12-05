@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/harshambasta-2001/Steganography_project/internal"
@@ -83,7 +84,7 @@ func (s *APIServer) loginuser (c *gin.Context){
 func (s *APIServer) get_users (c *gin.Context){
 
 	users,err := s.getAllUsers()
-	
+
 
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Failed to retrieve all users"})
@@ -95,3 +96,13 @@ func (s *APIServer) get_users (c *gin.Context){
 
 
 
+func (s *APIServer) delete_User (c *gin.Context){
+	id, err := strconv.Atoi(c.Param("id"))
+
+	user ,err := s.delete_user(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid ID"})
+	}
+
+	c.JSON(http.StatusNoContent,gin.H{"message":"User Successfully Deleted","user_details":user})
+}

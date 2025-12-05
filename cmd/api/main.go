@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/harshambasta-2001/Steganography_project/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -77,6 +78,14 @@ func (s *APIServer) setupRoutes() *gin.Engine {
 			dashboard.POST("/",s.createuser)
 			dashboard.POST("/login",s.loginuser)
 			dashboard.GET("/all-users",s.get_users)
+			dashboard.DELETE("/:id",s.delete_User)
+		}
+		product := v1.Group("/product")
+		product.Use(utils.AuthMiddleware())
+		{
+			product.POST("/",s.createproduct)
+			product.GET("/:code",s.extract_text)
+			product.DELETE("/:code",s.remove_product)
 		}
 	}
 

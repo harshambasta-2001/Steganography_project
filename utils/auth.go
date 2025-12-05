@@ -2,9 +2,12 @@ package utils
 
 import (
 	"errors"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/harshambasta-2001/Steganography_project/internal"
 	"golang.org/x/crypto/bcrypt"
@@ -49,7 +52,7 @@ func GenerateToken(user internal.User) (string, error) {
 }
 
 
-func ValidateToken(tokenString string) (*JWTClaims, error) {
+func validateToken(tokenString string) (*JWTClaims, error) {
 	secretKey := []byte(os.Getenv("JWT_SECRET"))
 	claims := &JWTClaims{}
 
@@ -62,4 +65,30 @@ func ValidateToken(tokenString string) (*JWTClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+			return
+		}
+
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		if tokenString == authHeader {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+			return
+		}
+
+		claims, err := validateToken(tokenString)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.Set("userID", claims.UserID)
+		c.Set("userName", claims.UserName)
+		c.Next()
+	}
 }

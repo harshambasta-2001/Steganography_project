@@ -1,0 +1,1 @@
+ALTER TABLE products ADD COLUMN code VARCHAR(255);

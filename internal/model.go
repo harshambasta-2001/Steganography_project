@@ -12,9 +12,10 @@ func (User) TableName() string {
 }
 
 type Product struct {
-	ID     uint   `gorm:"primaryKey;column:id" json:"id"`
-	Text   string `gorm:"type:text;column:text" json:"text"`
-	UserID uint   `gorm:"column:user_id" json:"user_id"`
+	ID     uint   `gorm:"primaryKey;column:ID" json:"id"`
+	Text   string `gorm:"type:text;column:Text" json:"text"`
+	UserID uint   `gorm:"column:UserId" json:"userid"`
+	Code   string `gorm:"column:code" json:"code"`
 }
 
 func (Product) TableName() string {
@@ -27,7 +28,7 @@ type RegisterUser struct{
 	Password  string `json:"password" binding:"required,min=8,max=130"`
 }
 
-type CreateProduct struct{
+type PayloadProduct struct{
 	Text string `json:"Text" binding:"required"`
 }
 
@@ -36,3 +37,8 @@ type LoginUser struct{
 	Password  string `json:"password" binding:"required,min=8,max=130"`
 
 }
+
+// type CreateProduct struct {
+// 	Text string `json:"Text" binding: "required"`
+// 	UserID uint `json: "UserID" binding: "required"`
+// }
