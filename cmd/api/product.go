@@ -10,6 +10,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// @Summary Create a new product
+// @Description Create a new product with text content. This endpoint is protected.
+// @Tags Product
+// @Accept  json
+// @Produce  json
+// @Param   product body internal.PayloadProduct true "Product Text Content"
+// @Success 201 {object} map[string]string "Product created successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /product [post]
 func (s *APIServer) createproduct(c *gin.Context) {
 	var product internal.PayloadProduct
 
@@ -42,10 +53,20 @@ func (s *APIServer) createproduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Product created successfully", "Code": prod.Code})
+	c.JSON(http.StatusCreated, gin.H{"message": "Product created successfully", "code": prod.Code})
 
 }
 
+// @Summary Extract text from a product
+// @Description Retrieve the text content of a product using its unique code. This endpoint is protected.
+// @Tags Product
+// @Produce  json
+// @Param   code path string true "Product Code"
+// @Success 200 {object} map[string]string "Product data"
+// @Failure 404 {object} map[string]string "Product not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /product/{code} [get]
 func (s *APIServer) extract_text(c *gin.Context) {
 	code := c.Param("code")
 	userId := c.MustGet("userID")
@@ -63,6 +84,15 @@ func (s *APIServer) extract_text(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Product fetched successfully", "data": product.Text})
 }
 
+// @Summary Remove a product
+// @Description Delete a product using its unique code. This endpoint is protected.
+// @Tags Product
+// @Produce  json
+// @Param   code path string true "Product Code"
+// @Success 200 {object} map[string]string "Deletion confirmation"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /product/{code} [delete]
 func (s *APIServer) remove_product(c *gin.Context) {
 	code := c.Param("code")
 	userId := c.MustGet("userID")
