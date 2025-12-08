@@ -113,10 +113,24 @@ func (s *APIServer) get_users(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Failed to retrieve all users"})
-		return // Added return
+		return 
+	}
+	if len(users) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"Error": "No users found"})
+		return
 	}
 
-	c.JSON(http.StatusOK, users)
+	var user_data []map[string]interface{}
+
+	for _, user := range users {
+		user_data = append(user_data, map[string]interface{}{
+			"ID":    user.ID,
+			"Name":  user.Name,
+			"Email": user.Email,
+		})
+	}
+
+	c.JSON(http.StatusOK, user_data)
 }
 
 // @Summary Delete a user
@@ -143,3 +157,4 @@ func (s *APIServer) delete_User(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User Successfully Deleted"})
 }
+
